@@ -1,16 +1,24 @@
-class HiloFib extends Thread{
+class HiloFib implements Runnable{
 	
+	private Thread hilo;
 	private float numero;//numero que le da el usuario
 	public float nfib;//numero donde se guarda el resultado
 	
 	//constructor
 	public HiloFib(float numeroPos){
 		this.numero=numeroPos;
+		hilo= new Thread(this,"hilo");
+		hilo.start();
 	}
+	
 	@Override
 	public void run(){
 		
 			nfib=fibonacci(numero);
+	}
+	
+	public void esperar() throws InterruptedException {
+		this.hilo.join();
 	}
 	
 	public float fibonacci(float f){
@@ -45,8 +53,7 @@ public class HiloFibonacci {
 		try {
 			
 			HiloFib hiloUnico= new HiloFib(numero);
-			hiloUnico.start();
-			hiloUnico.join();
+			hiloUnico.esperar();
 			System.out.println(String.valueOf("El monohilo: "+hiloUnico.nfib));
 
 		
@@ -57,13 +64,9 @@ public class HiloFibonacci {
 			HiloFib hilo1 = new HiloFib((numero-2));
 			HiloFib hilo2 =new HiloFib((numero-1));
 			
-			//arrancar los hilos
-			hilo1.start();
-			hilo2.start();
-			
 			//esperar hasta que acaben los hilos
-			hilo1.join();
-			hilo2.join();
+			hilo1.esperar();
+			hilo2.esperar();
 			System.out.println("El multihilo: "+String.valueOf((hilo1.nfib+hilo2.nfib)));	
 		} catch (InterruptedException e) {}
 	}
